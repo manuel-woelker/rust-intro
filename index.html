@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Rust Intro</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
@@ -24,7 +24,99 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
+				<section>
+					<h1>Rust Intro</h1>
+					<h3>Safe, concurrent, fast</h3>
+					<p>
+						<small>DWW 2017-02-XX</small>
+					</p>
+				</section>
+
+				<section>
+					<h2>In a nutshell</h2>
+					<ul>
+						<li class="fragment">"Systemprogrammiersprache"</li>
+						<li class="fragment">Sicherheit</li>
+						<li class="fragment">Nebenläufig</li>
+						<li class="fragment">Performant</li>
+						<li class="fragment">Gesponsort durch Mozilla Research</li>
+						<li class="fragment">Stable seit Mai 2015</li>
+						<li class="fragment">Apache 2.0/MIT Lizenz</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>"Fehlende" "Features"</h2>
+					<ul>
+						<li class="fragment">Garbage Collection</li>
+						<li class="fragment">Exceptions</li>
+						<li class="fragment">Data races</li>
+						<li class="fragment">ConcurrentModificationExceptions</li>
+						<li class="fragment">NullPointerExceptions</li>
+						<li class="fragment">Buffer overruns</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Hello World</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+	fn main() {
+		println!("Hello World!");
+	}
+					</code></pre>
+				</section>
+				<section>
+					<h2>Macros</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+						let re = regex!(r"\d{4}-\d{2}-\d{2}");
+					</code></pre>
+				</section>
+				<section>
+					<h2>Error handling 1</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+						remove_file("/file");
+					</code></pre>
+					<pre><code class="hljs" data-trim contenteditable>
+warning: unused result which must be used, #[warn(unused_must_use)] on by default
+ --> error.rs:7:5
+  |
+7 |     remove_file("/file");
+  |     ^^^^^^^^^^^^^^^^^^^^^
+
+					</code></pre>
+				</section>
+				<section>
+					<h2>Error handling 2</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+if remove_file("/file").is_err() {
+        panic!("Could not delete file");
+}					</code></pre>
+				</section>
+
+				<section>
+					<h2>Error handling 3</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+    match remove_file("/file") {
+        Ok(_) => {},
+        Err(err) => return Err(err),
+    }					</code></pre>
+				</section>
+				
+				<section>
+					<h2>Error handling 4</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+    try!(remove_file("/file"));</code></pre>
+				</section>
+
+				<section>
+					<h2>Error handling 5</h2>
+					<pre><code class="hljs" data-trim contenteditable>
+    remove_file("/file")?;</code></pre>
+				</section>
+
+				<section>
+					<h2>Data safety</h2>
+					<p>Das Problem: <span class="fragment">Shared</span> <span class="fragment">Mutable Access</span> 
+				</section>
 				<section>Slide 2</section>
 			</div>
 		</div>
@@ -36,7 +128,10 @@
 			// More info https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
 				history: true,
-
+				width: "90%",
+				margin: 0.01,
+				minScale: 0.1,
+    			maxScale: 2.5,
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
