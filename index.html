@@ -67,6 +67,7 @@
 				<section>
 					<h2>Macros</h2>
 					<pre><code class="hljs" data-trim contenteditable>
+						info!("Commencing yak shaving for {:?}", yak);
 						let re = regex!(r"\d{4}-\d{2}-\d{2}");
 					</code></pre>
 				</section>
@@ -114,10 +115,98 @@ if remove_file("/file").is_err() {
 				</section>
 
 				<section>
-					<h2>Data safety</h2>
-					<p>Das Problem: <span class="fragment">Shared</span> <span class="fragment">Mutable Access</span> 
+					<h2>Data safety 1</h2>
+					<p>Problem: <span class="fragment">Shared</span> <span class="fragment">Mutable Access</span> 
+					<p class="fragment">Lösung: Verfolgen von Änderbarkeit und Sharing auf Typebene<p>
 				</section>
-				<section>Slide 2</section>
+				<section>
+					<h2>Data safety 2</h2>
+					<code class="hljs fragment" data-trim contenteditable>let foo1 = vec![1, 2, 3]; // Nicht veränderbar</code>
+					<code class="hljs fragment" data-trim contenteditable>let mut foo2 = vec![1, 2, 3]; // Veränderbar</code>
+					<code class="hljs fragment" data-trim contenteditable>let foo3 = &mut foo2; // Veränderbare Referenz</code>
+					<code class="hljs fragment" data-trim contenteditable>let foo4 = &foo2; // Nicht-veränderbare Referenz</code>
+
+					<pre style="width: 100%"><code class="hljs fragment" data-trim contenteditable>
+error[E0502]: cannot borrow `foo2` as immutable because it is also borrowed as mutable
+ --> error.rs:6:17
+  |
+5 |     let foo3 = &mut foo2;
+  |                     ---- mutable borrow occurs here
+6 |     let foo4 = &foo2;
+  |                 ^^^^ immutable borrow occurs here
+7 | }
+  | - mutable borrow ends here
+  </code></pre>
+				</section>
+				
+				<section>
+					<h2>Traits 1</h2>
+					<ul>
+						<li class="fragment">"Interfaces"</li>
+						<li class="fragment">...die auch für fremde Klassen implementiert werden können</li>
+						<li class="fragment">+ Static dispatch/Inlining</li>
+					</ul>
+				</section>
+				
+				<section>
+					<h2>Traits 2</h2>
+					<pre style="width: 100%"><code class="hljs" data-trim contenteditable>
+#[derive(Debug)]
+struct Period {seconds: u64}
+trait ToPeriod {
+    fn minutes(self) -> Period;    
+}
+impl ToPeriod for u64 {
+    fn minutes(self) -> Period {
+        Period {seconds: self * 60}
+    }
+}
+fn main() {
+    let three_minutes = 3.minutes();
+    println!("{:?}", three_minutes);
+    // Period { seconds: 180 }
+}
+  </code></pre>
+				</section>
+
+<section>
+					<h2>trait <code>Drop</code></h2>
+					<ul>
+						<li class="fragment">"finalize()"</li>
+						<li class="fragment">Wird aufgerufen, wenn eine Struktur nicht mehr geowned ist</li>
+						<li class="fragment">
+							<pre style="width: 100%"><code class="hljs" data-trim contenteditable
+							>{
+	let mut f = File::create("foo.txt")?;
+	f.write_all(b"Hello, world!")?;
+	// foo.txt wird hier in jedem Fall geschlossen
+}
+</code></pre>
+							</li>
+						<li class="fragment">Verhindert Resourcenleaks</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Weitere Features</h2>
+					<ul>
+						<li class="fragment">Echte Generics (mit monomorphization)</li>
+						<li class="fragment">Safe Concurrency: Send & Sync traits</li>
+						<li class="fragment">Zero cost abstractions, z.B.: Option&lt;T&gt;</li>
+						<li class="fragment">Sum type enums/Tagged Unions</li>					
+						<li class="fragment">C interop</li>					
+					</ul>
+				</section>				
+
+				<section>
+					<blockquote>
+						<p>
+						&ldquo; A language that doesn't affect the way you think about programming, is not worth knowing.&rdquo;
+						</p>
+						 <footer>— Alan Perlis</footer>
+					</blockquote>
+				</section>				
+
 			</div>
 		</div>
 
